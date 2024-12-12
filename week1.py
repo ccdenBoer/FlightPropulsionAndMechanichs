@@ -23,17 +23,17 @@ def dragPolar3(x):
 
 def graph():
     # Create a range of x values
-    y = np.linspace(-0.1, 0.989758, 500)  # 500 points between -10 and 10
+    y = np.linspace(-0.1, 0.989758, 500)  # 500 points between -0.1 and 0.989758
     # Compute the corresponding y values
     x = dragPolar(y)
 
     # Create a range of x values
-    x2 = np.linspace(0.083192, 0.1428262, 500)  # 500 points between -10 and 10
+    x2 = np.linspace(0.083192, 0.1428262, 500)  # 500 points between 0.083192 and 0.1428262
     # Compute the corresponding y values
     y2 = dragPolar2(x2)
 
     # Create a range of x values
-    x3 = np.linspace(0.1428262, 0.24, 500)  # 500 points between -10 and 10
+    x3 = np.linspace(0.1428262, 0.24, 500)  # 500 points between 0.1428262 and 0.24
     # Compute the corresponding y values
     y3 = dragPolar3(x3)
 
@@ -43,9 +43,12 @@ def graph():
     plt.plot(x, y, label=r"Drag polar", color='blue')
     plt.plot(x2, y2, label=r"Drag polar", color='blue')
     plt.plot(x3, y3, label=r"Drag polar", color='blue')
+
+    # Special points
     plt.plot(0.14283,1.24,'ro') 
     plt.plot(0.0391, 0,'ro') 
     plt.plot(0.08319,0.98976,'ro') 
+    
     plt.axhline(0, color='black', linewidth=0.7, linestyle='--')  # x-axis
     plt.axvline(0, color='black', linewidth=0.7, linestyle='--')  # y-axis
     plt.title("Plot of Drag polar")

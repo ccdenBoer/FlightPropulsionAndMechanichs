@@ -15,16 +15,18 @@ def holoGraph(x):
 
 def graph():
     # Create a range of x values
-    HGx = np.linspace(0, 200, 1000)  # 500 points between -10 and 10
+    HGx = np.linspace(0, 200, 1000)  # 500 points between 0 and 200
     # Compute the corresponding y values
     HGy = holoGraph(HGx)
-
 
     # Plot the function
     plt.figure(figsize=(10, 10))
     plt.plot(HGx, HGy, label=r"HoloGraph", color='blue')
+
+    # Special Points
     plt.plot(154,holoGraph(154),'ro') 
     plt.plot(9.2, holoGraph(9.2),'ro') 
+
     plt.axhline(0, color='black', linewidth=0.7, linestyle='--')  # x-axis
     plt.axvline(0, color='black', linewidth=0.7, linestyle='--')  # y-axis
     plt.title("Plot of HoloGraph")
