@@ -12,16 +12,22 @@ def powerRequiredCurve(x):
 
     return (a * rho * S)/(2) * x**3 + (2 * b * W**2)/(rho * x * S)
 
+def powerAvailableCurve(x):
+
+    return 316000 * x
+
 def graph():
     # Create a range of x values
     HGx = np.linspace(0, 200, 1000)  # 1000 points between 0 and 200
     # Compute the corresponding y values
     HGy = powerRequiredCurve(HGx)
+    HGa = powerAvailableCurve(HGx)
 
 
     # Plot the function
     plt.figure(figsize=(10, 10))
     plt.plot(HGx, HGy, label=r"Power Required Curve", color='blue')
+    plt.plot(HGx, HGa, label=r"Power Available", color="red")
 
     
     plt.axhline(0, color='black', linewidth=0.7, linestyle='--')  # x-axis
