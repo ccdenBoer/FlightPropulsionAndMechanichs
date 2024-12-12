@@ -29,7 +29,10 @@ def graph():
     plt.plot(HGx, HGy, label=r"Power Required Curve", color='blue')
     plt.plot(HGx, HGa, label=r"Power Available", color="red")
 
-    
+    # Highlight intersection
+    idx = np.argwhere(np.diff(np.sign(HGy - HGa))).flatten()
+    plt.plot(HGx[idx], HGa[idx], 'ro')
+
     plt.axhline(0, color='black', linewidth=0.7, linestyle='--')  # x-axis
     plt.axvline(0, color='black', linewidth=0.7, linestyle='--')  # y-axis
     plt.title("Power Required Curve")
