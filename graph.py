@@ -9,7 +9,7 @@ import week4
 #week1.graph()
 #week2.graph()
 #week3.graph()
+week4.graph()
 
 # leave for the end
-#plt.show()
-print(week4.CalcVelocity(0))
+plt.show()
