@@ -1,89 +1,49 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
-Nacc = 0.015
-Ndec = 0.40
-g = 9.81
-W = 217000
-rho = 1.225
-S = 361.6
-T = 310 * 2 * 1000
-b= 60.3
+# Constants
+g = 9.81  # Gravity (m/s^2)
+T = 620000  # Thrust (N)
+W = 229800  # Aircraft weight (N)
+Uacc = 0.015  # Friction coefficient during acceleration
+Udec = 0.40  # Friction coefficient during deceleration
+CD = 0.0233  # Drag coefficient
+CL = 0.15  # Lift coefficient
+CLmax = 1.24  # Maximum lift coefficient
+rho = 1.225  # Air density (kg/m^3)
+S = 363.1  # Wing surface area (m^2)
 
-def TakeOffPhaseGroundRunAcc(V):
-    Cd = 0.0391
-    Cl = Nacc/(2*b)
-    p = g*((T/W)-Nacc)
-    q = -(g*(Cd - Nacc*Cl)*rho*S)/(2*W)
-    a = p+q*(V**2)
-    return a
+# Compute velocities
+Vmin = math.sqrt((2 * W) / (CLmax * rho * S))  # Stall speed (minimum velocity)
+VOne = 249 / 3.6  # Convert 249 km/h to m/s (decision speed V1)
+Vlof = 1.2 * Vmin  # Lift-off velocity (1.2 times stall speed)
 
-def TakeOffPhaseGroundRunDec(V):
-    Cd = 0.0391
-    Cl = Ndec/2*b
-    p = g*((T/W)-Ndec)
-    q = -(g*(Cd - Ndec*Cl)*rho*S)/2*W
-    a = p+q*(V**2)
-    return a
+print(f"Stall speed Vmin: {Vmin:.2f} m/s")
+print(f"Lift-off speed Vlof: {Vlof:.2f} m/s")
 
-def CalcVelocity(v): 
-    exitvalue = 242 / 3.6
-    print (v)
-    v += TakeOffPhaseGroundRunAcc(v)
-    if v >= exitvalue or v < 0: return
-    v = CalcVelocity(v) 
-    return v
+V1_range = np.linspace(VOne, Vlof, 100)  # Range of decision velocities
 
-def graph():
-    # Create a range of x values
-    HGx = np.linspace(0, 300, 1000)  # 1000 points between 0 and 300
-    # Compute the corresponding y values
-    HGSeaLevel = powerRequiredCurveAtSeaLevel(HGx)
-    HG10KFeet = powerRequiredCurveAt10KFeet(HGx)
-    HG30KFeet = powerRequiredCurveAt30KFeet(HGx)
+# Function to compute acceleration distance
+def accel_distance(v1):
+    p = g * ((T / W) - Uacc)  # Constant linear acceleration term
+    q = (g * (CD - Uacc * CL) * S) / (2 * W)  # Quadratic drag term
+    return (1 / (2 * q)) * np.log(1 + (q * v1**2) / p)  # Correct logarithmic formula
 
-    cSeaLevel = climbRateAtSeaLevel(HGx)
-    c10KFeet = climbRateAt10KFeet(HGx)
-    c30KFeet = climbRateAt30KFeet(HGx)
+# Function to compute deceleration distance
+def decel_distance(v1):
+    a_decel = g * Udec  # Constant deceleration
+    return v1**2 / (2 * a_decel)
 
-    HGa = powerAvailableCurve(HGx)
+# Compute total accelerate-stop distance
+total_distance = [accel_distance(v1) + decel_distance(v1) for v1 in V1_range]
 
-    # Create the plot
-    fig, ax1 = plt.subplots(figsize=(10, 10))
-
-    # Plot power curves on the primary y-axis
-    ax1.plot(HGx, HGSeaLevel, label="Power Required (Sea level)", color='lightblue')
-    ax1.plot(HGx, HG10KFeet, label="Power Required (10,000 Feet)", color='blue')
-    ax1.plot(HGx, HG30KFeet, label="Power Required (30,000 Feet)", color='darkblue')
-    ax1.plot(HGx, HGa, label="Thrust Available", color="red")
-
-    # Highlight intersections
-    intersectionsSeaLevel = np.argwhere(np.diff(np.sign(HGSeaLevel - HGa))).flatten()
-    intersections10KFeet = np.argwhere(np.diff(np.sign(HG10KFeet - HGa))).flatten()
-    intersections30KFeet = np.argwhere(np.diff(np.sign(HG30KFeet - HGa))).flatten()
-
-    ax1.plot(HGx[intersectionsSeaLevel], HGa[intersectionsSeaLevel], 'ro')
-    ax1.plot(HGx[intersections10KFeet], HGa[intersections10KFeet], 'ro')
-    ax1.plot(HGx[intersections30KFeet], HGa[intersections30KFeet], 'ro')
-
-    ax1.set_xlabel("V [m/s]")
-    ax1.set_ylabel("Power [W]", color='blue')
-    ax1.tick_params(axis='y', labelcolor='blue')
-    ax1.grid(True)
-
-    # Create secondary y-axis for climb rates
-    ax2 = ax1.twinx()
-    ax2.plot(HGx, cSeaLevel, label="Climb Rate (Sea level)", color='lightgreen', linestyle='-')
-    ax2.plot(HGx, c10KFeet, label="Climb Rate (10,000 Feet)", color='green', linestyle='--')
-    ax2.plot(HGx, c30KFeet, label="Climb Rate (30,000 Feet)", color='darkgreen', linestyle='--')
-    ax2.set_ylabel("Climb Rate [m/s]", color='green')
-    ax2.tick_params(axis='y', labelcolor='green')
-
-    # Combine legends from both axes
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    legend = ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper right")
-    legend.set_zorder(15)  # Bring legend to the front
-
-    plt.title("Power Required and Climb Rate Curves")
+# Plot the graph
+plt.figure(figsize=(10, 6))
+plt.plot(V1_range, total_distance, label='Runway Length vs Decision Velocity', color='b')
+plt.xlabel('Decision Velocity V1 (m/s)')
+plt.ylabel('Total Runway Length (m)')
+plt.title('Accelerate-Stop Distance vs Decision Velocity (V1)')
+plt.grid(True)
+plt.legend()
+plt.show()
