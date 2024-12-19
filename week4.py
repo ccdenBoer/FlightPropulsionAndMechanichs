@@ -17,7 +17,7 @@ S = 363.1  # Wing surface area (m^2)
 # Compute velocities
 Vmin = math.sqrt((2 * W) / (CLmax * rho * S))  # Stall speed (minimum velocity)
 VOne = 249 / 3.6  # Convert 249 km/h to m/s (decision speed V1)
-Vlof = 1.2 * VOne  # Lift-off velocity (1.2 times stall speed)
+Vlof = 1.2 * Vmin  # Lift-off velocity (1.2 times stall speed)
 
 print(f"Stall speed Vmin: {Vmin:.2f} m/s")
 print(f"Lift-off speed Vlof: {Vlof:.2f} m/s")
