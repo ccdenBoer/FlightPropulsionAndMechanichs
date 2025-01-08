@@ -2,15 +2,18 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Calculate the turning radius with the given velocity and angle (after converting to radians)
 def CalculateRadius(Velocity, phi):
-    g = 9.81
+    g = 9.81 
     return (Velocity**2)/(g*math.tan(math.radians(phi)))
 
+# Calculate the turning time with the given radius and velocity
 def CalculateTurningTime(Velocity, radius):
-    return (2*math.pi*radius)/Velocity
+    return (2*math.pi*radius)/Velocity 
 
+# Calculate the load factor with the given angle (after converting to radians)
 def CalculateLoadFactor(phi):
-    return 1/math.cos(math.radians(phi))
+    return 1/math.cos(math.radians(phi)) 
 
 def graph_Radius():
     phi_range = np.linspace(1, 90, 90)  # Banking angles from 1° to 80°
