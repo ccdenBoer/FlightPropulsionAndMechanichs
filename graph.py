@@ -11,10 +11,9 @@ import week5
 #week2.graph()
 #week3.graph()
 #week4.graph()
+week5.graph_Radius()
+week5.graph_TurningTime()
+week5.graph_LoadFactor()
 
 # leave for the end
-#plt.show()
-
-speed = 244 # max cruise speed according to website
-for i in range(1, 60):
-    print(f"Speed: {speed} m/s, φ {i}°, Turning radius: {week5.CalculateRadius(speed, i)} m, Turning time: {week5.CalculateTurningTime(speed, week5.CalculateRadius(speed, i))} seconds, Load factor: {week5.CalculateLoadFactor(i)} G")
+plt.show()
