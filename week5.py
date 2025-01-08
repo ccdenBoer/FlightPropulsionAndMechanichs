@@ -7,5 +7,5 @@ def CalculateRadius(Velocity, phi):
 def CalculateTurningTime(Velocity, radius):
     return (2*math.pi*radius)/Velocity
 
-def calculateLoadFactor(phi):
+def CalculateLoadFactor(phi):
     return 1/math.cos(math.radians(phi))
