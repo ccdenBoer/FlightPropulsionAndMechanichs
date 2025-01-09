@@ -147,9 +147,9 @@ def graph():
     # Plot Ground Run Distance vs. Decision Velocity
     plt.figure(figsize=(12, 6))
     #plt.plot(v1_range, total_takeoff_lengths_AEO, label="AEO", color='blue')
-    #plt.plot(v1_range, total_takeoff_lengths_OEI, label="OEI", color='green')
-    #plt.plot(v1_range, accelerate_stop_distances, label="Accelerate-Stop Distance", color='red')
-    plt.plot(v1_range, landing_lengths, label="Landing Length", color='purple')
+    plt.plot(v1_range, total_takeoff_lengths_OEI, label="OEI", color='green')
+    plt.plot(v1_range, accelerate_stop_distances, label="Accelerate-Stop Distance", color='red')
+    #plt.plot(v1_range, landing_lengths, label="Landing Length", color='purple')
 
     # Customize the plot
     plt.title("Required Runway Length vs Approach Speed")
@@ -162,5 +162,76 @@ def graph():
     plt.tight_layout()
     plt.show()
     
+
+def balanced_field():
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # Decision speeds (V1) to evaluate (m/s)
+    v1_range = np.linspace(30, 70, 40)  # Example range of V1 values
+
+    # Maximum runway length (meters)
+    runway_length = 3000
+
+    # Initialize lists to store results
+    distances_to_v1 = []  # Distance to reach V1
+    accelerate_go_distances = []  # Accelerate-Go distance (OEI)
+    accelerate_stop_distances = []  # Accelerate-Stop distance
+
+    # Calculate values for each V1
+    for v1 in v1_range:
+        distance_to_v1 = calculate_ground_run(v1)
+        accelerate_go_distance = calculate_takeoff_length_OEI(v1) + distance_to_v1  # Add distance to V1
+        accelerate_stop_distance = calculate_accelerate_stop(v1) + distance_to_v1  # Add distance to V1
+
+        # Adjust for maximum runway length
+        accelerate_go_distance = min(accelerate_go_distance, runway_length)
+        accelerate_stop_distance = min(accelerate_stop_distance, runway_length)
+
+        # Store the calculated distances
+        distances_to_v1.append(distance_to_v1)
+        accelerate_go_distances.append(runway_length - accelerate_go_distance)  # Subtract from 3000
+        accelerate_stop_distances.append(accelerate_stop_distance)
+
+    # Find intersection point between Accelerate-Go and Accelerate-Stop
+    intersection_x = None
+    intersection_y = None
+    for i in range(1, len(v1_range)):
+        if (accelerate_go_distances[i] <= accelerate_stop_distances[i] and 
+            accelerate_go_distances[i-1] > accelerate_stop_distances[i-1]):
+            intersection_x = v1_range[i]
+            intersection_y = accelerate_go_distances[i]
+            break
+
+    # Plot the lines
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    # Plot Adjusted Accelerate-Go Distance
+    ax.plot(v1_range, accelerate_go_distances, color="green", marker="o", label="Accelerate-Go Distance")
+
+    # Plot Accelerate-Stop Distance
+    ax.plot(v1_range, accelerate_stop_distances, color="red", marker="o", label="Accelerate-Stop Distance")
+
+    # Plot intersection point
+    if intersection_x is not None and intersection_y is not None:
+        ax.axvline(x=intersection_x, color="black", linestyle="--", label=f"V1 at Intersection ({intersection_x:.2f} m/s)")
+        ax.axhline(y=intersection_y, color="black", linestyle="--", label=f"Distance at Intersection ({intersection_y:.2f} m)")
+        ax.scatter(intersection_x, intersection_y, color="purple", zorder=5)
+
+    # Customize the plot
+    ax.set_title("Balanced Field Length Chart")
+    ax.set_xlabel("Decision Speed (V1) (m/s)")
+    ax.set_ylabel("Distance (m)")
+    ax.grid(True)
+    ax.legend()
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+
     
 
