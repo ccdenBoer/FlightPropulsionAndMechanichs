@@ -72,3 +72,44 @@ def graph_LoadFactor():
     # Show the plot
     plt.tight_layout()
     #plt.show()
+
+a = 0.0494
+S = 361.6
+W = 217000
+b = 0.03164114177
+
+def powerRequiredCurveAt10KFeet(V, phi):
+    rho = 1.1116
+    return ((a * rho * S)/(2)) * V**3 + (2 * b * W**2)/(rho * V * S * math.cos(math.radians(phi))**2)
+
+def graph_powerRequired():
+    # Create a range of x values
+    HGx = np.linspace(0.2, 300, 1000)  # 1000 points between 0 and 300
+    angle_1 = 30
+    angle_2 = 45
+    angle_3 = 60
+    # Compute the corresponding y values
+    HG30D = powerRequiredCurveAt10KFeet(HGx, angle_1)
+    HG45D = powerRequiredCurveAt10KFeet(HGx, angle_2)
+    HG60D = powerRequiredCurveAt10KFeet(HGx, angle_3)
+
+
+    # Create the plot
+    fig, ax1 = plt.subplots(figsize=(10, 10))
+
+    # Plot power curves on the primary y-axis
+    ax1.plot(HGx, HG30D, label="Power Required 30*", color='blue')
+    ax1.plot(HGx, HG45D, label="Power Required 45*", color='green')
+    ax1.plot(HGx, HG60D, label="Power Required 60*", color='red')
+
+    ax1.set_xlabel("V [m/s]")
+    ax1.set_ylabel("Power [W]", color='blue')
+    ax1.tick_params(axis='y', labelcolor='blue')
+    ax1.grid(True)
+
+    # Combine legends from both axes
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    legend = ax1.legend(lines1, labels1, loc="upper right")
+    legend.set_zorder(15)  # Bring legend to the front
+
+    plt.title("Power Required")
